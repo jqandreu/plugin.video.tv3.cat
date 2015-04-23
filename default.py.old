@@ -1,0 +1,107 @@
+
+
+
+import os
+import sys
+import re
+import urlparse
+import xbmc
+import xbmcplugin
+import xbmcaddon
+import xbmcgui
+
+
+
+
+
+#Localized strings
+T_AVUI_DESTAQUEM=30001
+T_NO_THO_PERDIS=30002
+
+#Entry point
+def run():
+
+	params = get_params()
+	
+	if params.get("action") is None:
+		main_list(params)
+		
+#Main menu
+def main_list(params):
+	xbmc.log("main_list")
+	
+	#No t'ho perdis
+	add_item( 
+        action="nothoperdis", 
+        title=plugintools.get_localized_string(T_NO_THO_PERDIS) ,
+        url="http://www.ccma.cat/tv3/alacarta/",
+        folder=True )
+    
+    #Avui destaquem
+	add_item(
+        action="avuidestaquem",
+        title=plugintools.get_localized_string(T_AVUI_DESTAQUEM),
+        url="http://www.ccma.cat/tv3/alacarta/",
+        folder=True )
+		
+	xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
+		
+def add_item( action="" , title="" , plot="" , url="" ,thumbnail="" , isPlayable = False, folder=True ):
+    xbmc.log("add_item action=["+action+"] title=["+title+"] url=["+url+"] thumbnail=["+thumbnail+"] isPlayable=["+str(isPlayable)+"] folder=["+str(folder)+"]")
+
+    listitem = xbmcgui.ListItem( title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail )
+    listitem.setInfo( "video", { "Title" : title, "FileName" : title, "Plot" : plot } )
+    
+    if url.startswith("plugin://"):
+        itemurl = url
+        listitem.setProperty('IsPlayable', 'true')
+        xbmcplugin.addDirectoryItem( handle=int(sys.argv[1]), url=itemurl, listitem=listitem, isFolder=folder)
+    elif isPlayable:
+        listitem.setProperty("Video", "true")
+        listitem.setProperty('IsPlayable', 'true')
+        itemurl = '%s?action=%s&title=%s&url=%s&thumbnail=%s&plot=%s' % ( sys.argv[ 0 ] , action , urllib.quote_plus( title ) , urllib.quote_plus(url) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ))
+        xbmcplugin.addDirectoryItem( handle=int(sys.argv[1]), url=itemurl, listitem=listitem, isFolder=folder)
+    else:
+        itemurl = '%s?action=%s&title=%s&url=%s&thumbnail=%s&plot=%s' % ( sys.argv[ 0 ] , action , urllib.quote_plus( title ) , urllib.quote_plus(url) , urllib.quote_plus( thumbnail ) , urllib.quote_plus( plot ))
+        xbmcplugin.addDirectoryItem( handle=int(sys.argv[1]), url=itemurl, listitem=listitem, isFolder=folder)
+		
+
+#Get parameters
+def get_params():
+	
+	param_string = argv[2]
+	
+	commands = {}
+	
+	if param_string:
+		split_commands = param_string[param_string.find('?') + 1:].split('&')
+
+		for command in split_commands:
+			#_log("get_params command="+str(command))
+			if len(command) > 0:
+				if "=" in command:
+					split_command = command.split('=')
+					key = split_command[0]
+					value = urllib.unquote_plus(split_command[1])
+					commands[key] = value
+				else:
+					commands[command] = ""
+
+	xbmc.log("get_params "+repr(commands))
+	return commands
+	
+def get_localized_string(code):
+    xbmc.log("get_localized_string code="+str(code))
+
+    dev = __language__(code)
+
+    try:
+        dev = dev.encode("utf-8")
+    except:
+        pass
+
+    #_log("get_localized_string ->'"+dev+"'")
+
+    return dev
+	
+	
