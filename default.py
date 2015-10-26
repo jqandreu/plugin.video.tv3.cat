@@ -19,6 +19,7 @@ import urllib2
 import json
 import math
 import time
+from BeautifulSoup import BeautifulSoup
 
 
 #Localized strings
@@ -43,6 +44,7 @@ t_tv3=30018
 t_canal324=30019
 t_c33super3=30020
 t_esport3=30021
+t_cercar=30022
 
 
 url_base = 'http://www.ccma.cat'
@@ -82,9 +84,14 @@ def listDestaquem():
     #featured video
     html_destacats = getUrl(url_alacarta)
     match = re.compile('<div class="subitem destacat">[^<]+<a.+?href="(.+?)"').findall(html_destacats)
-    if len(match) > 0:
-        c = match[0]
-        code = c[-8:-1]
+    
+    ##################BeautifulSoup############################################################
+    
+    soup = BeautifulSoup(html_destacats)
+    dest = None
+    try:
+        destacat = soup.find("div", {"class" : "subitem destacat"}).a["href"]
+        code = destacat[-8:-1]
   
         html_data = getUrl(url_datavideos + code + '&profile=pc')
 
@@ -93,25 +100,70 @@ def listDestaquem():
         
         if len(data) > 0:
             addLink(data)
+       
+    except AttributeError as e:
+        xbmc.log("Exception AtributeError Item destacat: " + str(e))
+    except KeyError as e:
+        xbmc.log("Exception KeyError Item destacat: " + str(e))
+    except:
+        xbmc.log("Exception Item destacat")
+        
+        
+    print "------------------------destacat important----------------------"
+    #print destacat
+    destacatsPetits = soup.findAll("div", { "class" : "subitem R-petit"})
+    #print dest
+    print "Items destacats"
+    for l in destacatsPetits:
+        print "------------destacat---------------"
+        print l.a["href"]
+    
+    try:
+        destacatsPetits = soup.findAll("div", { "class" : "subitem R-petit"})
+        
+        for c in destacatsPetits:
+            a = c.a["href"]
+            code = a[-8:-1]
+        
+            xbmc.log( "--------CODIS VIDEOS------------")
+            xbmc.log( "codi: " + code)
+            xbmc.log( "url: " + url_datavideos + code + '&profile=pc')
+    
+            html_data = getUrl(url_datavideos + code + '&profile=pc')
+        
+            html_data = html_data.decode("ISO-8859-1")
+            data =json.loads(html_data)
+        
+            if len(data) > 0:
+                addLink(data)
+    except AttributeError as e:
+        xbmc.log("Exception AtributeError Altres items: " + str(e))
+    except KeyError as e:
+        xbmc.log("Exception KeyError Altres items: " + str(e))
+    except:
+        xbmc.log("Exception Altres items")
+    
+    
+    
+    
+    
+    ######################################################################################
+    # if len(match) > 0:
+        # c = match[0]
+        # code = c[-8:-1]
+  
+        # html_data = getUrl(url_datavideos + code + '&profile=pc')
+
+        # html_data = html_data.decode("ISO-8859-1")
+        # data =json.loads(html_data)
+        
+        # if len(data) > 0:
+            # addLink(data)
    
     #more videos
-    match = re.compile('<div class="subitem R-petit">[^<]+<a.+?href="(.+?)"').findall(html_destacats)
+    #match = re.compile('<div class="subitem R-petit">[^<]+<a.+?href="(.+?)"').findall(html_destacats)
 
-    for c in match:
-       
-        code = c[-8:-1]
-        
-        xbmc.log( "--------CODIS VIDEOS------------")
-        xbmc.log( "codi: " + code)
-        xbmc.log( "url: " + url_datavideos + code + '&profile=pc')
     
-        html_data = getUrl(url_datavideos + code + '&profile=pc')
-        
-        html_data = html_data.decode("ISO-8859-1")
-        data =json.loads(html_data)
-        
-        if len(data) > 0:
-            addLink(data)
             
     xbmcplugin.endOfDirectory(addon_handle)
     
@@ -120,18 +172,42 @@ def listNoPerdis():
     xbmc.log("--------------listNoPerdis----------")
     
     link = getUrl(url_coleccions)
-    match = re.compile('<li class="sensePunt R-elementLlistat  C-llistatVideo">[^<]+<a.+?href="(.+?)"').findall(link)
+    #match = re.compile('<li class="sensePunt R-elementLlistat  C-llistatVideo">[^<]+<a.+?href="(.+?)"').findall(link)
+    
+    ############BeautifulSoup############################################################
+    soup = BeautifulSoup(link)
+    
+    
+    try: 
+        links = soup.findAll("li", {"class" : "sensePunt R-elementLlistat  C-llistatVideo"})
+    
+        for i in links:
+            a = i.a["href"]
+            code = a[-8:-1]
+            
+            link = getUrl(url_datavideos + code + '&profile=pc')
+            
+            link = link.decode("ISO-8859-1")
+            data =json.loads(link)
+            
+            if len(data) > 0:
+                addLink(data)
+    except AttributeError as e:
+        xbmc.log("Exception AtributeError NoPerdis: " + str(e))
+    except KeyError as e:
+        xbmc.log("Exception KeyError NoPerdis: " + str(e))
+    except:
+        xbmc.log("Exception NoPerdis")
+    
+    
+    
+    
+    
+    
+    ##################################################################################
 
-    for c in match:
-        code = c[-8:-1]
-        
-        link = getUrl(url_datavideos + code + '&profile=pc')
-        
-        link = link.decode("ISO-8859-1")
-        data =json.loads(link)
-        
-        if len(data) > 0:
-            addLink(data)
+    #for c in match:
+    
         
     xbmcplugin.endOfDirectory(addon_handle) 
         
@@ -402,6 +478,53 @@ def listVideos(url):
                     addDir(addon.getLocalizedString(t_seguent).encode("utf-8"), url_next, "listvideos", "")
                     
             xbmcplugin.endOfDirectory(addon_handle)
+            
+# def search():
+    # keyboard = xbmc.Keyboard('', t_cercar)
+    # keyboard.doModal()
+    # if keyboard.isConfirmed() and keyboard.getText():
+        # search_string = keyboard.getText().replace(" ", "+")
+        # url = "http://www.ccma.cat/tv3/alacarta/cercador/?items_pagina=15&profile=videos&text="+search_string
+        # listSearchVideos(url)
+        
+# def listSearchVideos(url)
+    # xbmc.log('listSearchVideos)
+    # link = getUrl(url)
+    
+    # match = re.compile('<li class="F-llistat-item">[^<]*<a.+?href="(.+?)">').findall(link)
+   
+    # if len(match) <> 0: 
+    
+        # #test code
+        # url_test = match[0]
+        # test = re.compile('/tv3/alacarta/.+?/([0-9]{7})').findall(url_test)
+        # if len(test) < 1:
+            # match = re.compile('<article class="M-destacat.+?">[^<]*<a.+?href="(.+?)" title=".+?">').findall(link)
+        
+        
+        # if len(match) <> 0:
+        
+            # for c in match:
+                
+                # code = c[-8:-1]
+                # data = getDataVideo(url_datavideos + code + '&profile=pc')
+                    
+                # if data <> None and len(data) > 0:
+                    # addLink(data)
+                
+               
+            # #Pagination
+            # match = re.compile('<p class="numeracio">P\xc3\xa0gina (\d+) de (\d+)</p>').findall(link)
+            # if len(match) <> 0:
+                # actualPage = int(match[0][0])
+                # totalPages = int(match[0][1])
+                    
+                # if actualPage < totalPages:
+                    # nextPage = str(actualPage + 1)
+                    # url_next = url + '?text=&profile=&items_pagina=15&pagina=' + nextPage
+                    # addDir(addon.getLocalizedString(t_seguent).encode("utf-8"), url_next, "listvideos", "")
+                    
+            # xbmcplugin.endOfDirectory(addon_handle)
             
     
 def addDir(name, url, mode,iconimage):
