@@ -74,19 +74,15 @@ def index():
     addDir(addon.getLocalizedString(t_mesvist).encode("utf-8"),"","mesvist","")
     addDir(addon.getLocalizedString(t_programes).encode("utf-8"),"","programes","")
     addDir(addon.getLocalizedString(t_directe).encode("utf-8"),"","directe","")
+    addDir(addon.getLocalizedString(t_cercar).encode("utf-8"),"","cercar","")
     
     xbmcplugin.endOfDirectory(addon_handle)
     
 def listDestaquem():
     xbmc.log("--------------listDestaquem----------")
-    
-    
-    #featured video
+   
     html_destacats = getUrl(url_alacarta)
-    match = re.compile('<div class="subitem destacat">[^<]+<a.+?href="(.+?)"').findall(html_destacats)
-    
-    ##################BeautifulSoup############################################################
-    
+   
     soup = BeautifulSoup(html_destacats)
     dest = None
     try:
@@ -105,18 +101,12 @@ def listDestaquem():
         xbmc.log("Exception AtributeError Item destacat: " + str(e))
     except KeyError as e:
         xbmc.log("Exception KeyError Item destacat: " + str(e))
-    except:
-        xbmc.log("Exception Item destacat")
+    except Exception as e:
+        xbmc.log("Exception Item destacat: " + str(e))
         
         
-    print "------------------------destacat important----------------------"
-    #print destacat
+   
     destacatsPetits = soup.findAll("div", { "class" : "subitem R-petit"})
-    #print dest
-    print "Items destacats"
-    for l in destacatsPetits:
-        print "------------destacat---------------"
-        print l.a["href"]
     
     try:
         destacatsPetits = soup.findAll("div", { "class" : "subitem R-petit"})
@@ -140,31 +130,12 @@ def listDestaquem():
         xbmc.log("Exception AtributeError Altres items: " + str(e))
     except KeyError as e:
         xbmc.log("Exception KeyError Altres items: " + str(e))
-    except:
-        xbmc.log("Exception Altres items")
+    except Exception as e:
+        xbmc.log("Exception Item destacat: " + str(e))
     
     
     
-    
-    
-    ######################################################################################
-    # if len(match) > 0:
-        # c = match[0]
-        # code = c[-8:-1]
-  
-        # html_data = getUrl(url_datavideos + code + '&profile=pc')
-
-        # html_data = html_data.decode("ISO-8859-1")
-        # data =json.loads(html_data)
-        
-        # if len(data) > 0:
-            # addLink(data)
    
-    #more videos
-    #match = re.compile('<div class="subitem R-petit">[^<]+<a.+?href="(.+?)"').findall(html_destacats)
-
-    
-            
     xbmcplugin.endOfDirectory(addon_handle)
     
     
@@ -172,11 +143,8 @@ def listNoPerdis():
     xbmc.log("--------------listNoPerdis----------")
     
     link = getUrl(url_coleccions)
-    #match = re.compile('<li class="sensePunt R-elementLlistat  C-llistatVideo">[^<]+<a.+?href="(.+?)"').findall(link)
-    
-    ############BeautifulSoup############################################################
+ 
     soup = BeautifulSoup(link)
-    
     
     try: 
         links = soup.findAll("li", {"class" : "sensePunt R-elementLlistat  C-llistatVideo"})
@@ -196,37 +164,41 @@ def listNoPerdis():
         xbmc.log("Exception AtributeError NoPerdis: " + str(e))
     except KeyError as e:
         xbmc.log("Exception KeyError NoPerdis: " + str(e))
-    except:
-        xbmc.log("Exception NoPerdis")
+    except Exception as e:
+        xbmc.log("Exception Item destacat: " + str(e))
     
-    
-    
-    
-    
-    
-    ##################################################################################
-
-    #for c in match:
-    
-        
+   
     xbmcplugin.endOfDirectory(addon_handle) 
         
 def listMesVist():
+    xbmc.log("--------------listMesVist----------")
    
     link = getUrl(url_mesvist)
-    match = re.compile('<li class="sensePunt R-elementLlistat  C-llistatVideo">.+?<small class="avantitol">.+?</small><h3 class="titol"><a href="(.+?)"').findall(link)
-
-    for c in match:
-        code = c[-8:-1]
+  
+    soup = BeautifulSoup(link)
+    
+    try: 
+        links = soup.findAll("li", {"class" : "sensePunt R-elementLlistat  C-llistatVideo"})
         
-        link = getUrl(url_datavideos + code + '&profile=pc')
-       
-        link = link.decode("ISO-8859-1")
-        data =json.loads(link)
+        for i in links:
+            a = i.a["href"]
+            code = a[-8:-1]
+            
+            link = getUrl(url_datavideos + code + '&profile=pc')
+            
+            link = link.decode("ISO-8859-1")
+            data =json.loads(link)
+            
+            if len(data) > 0:
+                addLink(data)
+    except AttributeError as e:
+        xbmc.log("Exception AtributeError listMesVist: " + str(e))
+    except KeyError as e:
+        xbmc.log("Exception KeyError listMesVist: " + str(e))
+    except Exception as e:
+        xbmc.log("Exception Item destacat: " + str(e))
         
-        if len(data) > 0:
-            addLink(data)
-        
+  
     xbmcplugin.endOfDirectory(addon_handle)
     
 def dirSections():
@@ -246,37 +218,57 @@ def dirSections():
     xbmcplugin.endOfDirectory(addon_handle)
     
 def listSections(url):
-  
+    xbmc.log("--------------listSections----------")
+    
     link = getUrl(url_programes_emisio + url)
-    match = re.compile('<ul class="R-abcProgrames">[\s\S]*?</ul>').findall(link)
     
+    soup = BeautifulSoup(link)
     
-    
-    for i in match:
-        d = re.compile('<li>[^<]+<a href="(.+)">[\n\r\s]+(.+)[\n\r\s]+</a>').findall(i)
-        for program in d:
-            url = program[0]
-            titol = program[1]
+    try: 
+        #Grups programes de cada lletra
+        links = soup.findAll("ul", {"class" : "R-abcProgrames"})
+        
+        for i in links:
+            xbmc.log("------------------Grup programes per lletra------------------")
+            ls = i.findAll("li")
             
-            #test url
-            urlProg = url_base + url
-            if urlProg == urlApm or urlProg == urlZonaZaping:
-                    url_final = urlProg + 'clips/'
-            else:
-                match = re.compile('(http://www.ccma.cat/tv3/alacarta/.+?/fitxa-programa/)(\d+/)').findall(urlProg)
-                if len(match) <> 0:
-                    url1 = match[0][0]
-                    urlcode = match[0][1]
-                    url_final = url1 + 'ultims-programes/' + urlcode
+            for li in ls:
+                url = li.a["href"]
+                t = str(li.a.string)
+                titol = re.sub('^[\n\r\s]+', '', t)
+                
+             
+                #test url
+                urlProg = url_base + url
+                if urlProg == urlApm or urlProg == urlZonaZaping:
+                        url_final = urlProg + 'clips/'
+                        
                 else:
-                    url_final = urlProg + 'ultims-programes/'
+                    match = re.compile('(http://www.ccma.cat/tv3/alacarta/.+?/fitxa-programa/)(\d+/)').findall(urlProg)
+                    if len(match) <> 0:
+                        url1 = match[0][0]
+                        urlcode = match[0][1]
+                        url_final = url1 + 'ultims-programes/' + urlcode
+                    else:
+                        url_final = urlProg + 'ultims-programes/'
+                        
+                xbmc.log ("url final: " + str(url_final))
             
-            addDir(titol,url_final,'listvideos', "")
+                addDir(titol ,url_final,'listvideos', "")
+            
+    except AttributeError as e:
+        xbmc.log("Exception AtributeError listSections: " + str(e))
+    except KeyError as e:
+        xbmc.log("Exception KeyError listSections: " + str(e))
+    except Exception as e:
+        xbmc.log("Exception listSections: " + str(e))
+    
         
     xbmcplugin.endOfDirectory(addon_handle) 
     
 def listDirecte():
-  
+    xbmc.log("--------------listDirecte----------")
+    
     thumb_tv3 = os.path.join(addon_path, 'resources', 'media', 'tv3_thumbnail.png')
     thumb_324 = os.path.join(addon_path, 'resources', 'media', '324_thumbnail.png')
     thumb_c33s3 = os.path.join(addon_path, 'resources', 'media', 'c33-super3_thumbnail.png')
@@ -381,6 +373,7 @@ def listDirecte():
     xbmcplugin.endOfDirectory(addon_handle) 
     
 def dirAZ_emisio():
+    xbmc.log("--------------dirAZ_emisio----------")
   
     addDir("A-C","#A-C","listAZemisio","")
     addDir("D-E","D-E","listAZemisio","")
@@ -394,6 +387,7 @@ def dirAZ_emisio():
     xbmcplugin.endOfDirectory(addon_handle)
     
 def dirAZ_tots():
+    xbmc.log("--------------dirAZ_tots----------")
 
     addDir("A-C","#A-C","listAZtots","")
     addDir("D-E","D-E","listAZtots","")
@@ -407,6 +401,7 @@ def dirAZ_tots():
     xbmcplugin.endOfDirectory(addon_handle)
     
 def listProgramesAZ(url, letters):
+    xbmc.log("--------------listProgramesAZ----------")
   
     r = '<div class="M-separadorSeccio"><h1 class="titol">[' + letters + ']</h1></div>\s*<ul class="R-abcProgrames">[\s\S]*?</ul>'
     
@@ -439,7 +434,8 @@ def listProgramesAZ(url, letters):
         
     xbmcplugin.endOfDirectory(addon_handle) 
     
-def listVideos(url):
+def listVideos(url, cercar):
+    xbmc.log("--------------listVideos----------")
    
     xbmc.log('Url listvideos: ' + url)
     link = getUrl(url)
@@ -473,58 +469,30 @@ def listVideos(url):
                 totalPages = int(match[0][1])
                 
                 if actualPage < totalPages:
-                    nextPage = str(actualPage + 1)
-                    url_next = url + '?text=&profile=&items_pagina=15&pagina=' + nextPage
-                    addDir(addon.getLocalizedString(t_seguent).encode("utf-8"), url_next, "listvideos", "")
+                    ntPage = str(actualPage + 1)
+                    nextPage = '&pagina=' + ntPage
+                    if cercar:
+                        if actualPage == 1:
+                            url_next = url + nextPage
+                        else:
+                            url_next = re.sub('&pagina=[\d]+', nextPage, url)
+                        addDir(addon.getLocalizedString(t_seguent).encode("utf-8"), url_next, "listvideoscercar", "")
+                    else:
+                        url_next = url + '?text=&profile=&items_pagina=15' + nextPage
+                        addDir(addon.getLocalizedString(t_seguent).encode("utf-8"), url_next, "listvideos", "")
                     
             xbmcplugin.endOfDirectory(addon_handle)
             
-# def search():
-    # keyboard = xbmc.Keyboard('', t_cercar)
-    # keyboard.doModal()
-    # if keyboard.isConfirmed() and keyboard.getText():
-        # search_string = keyboard.getText().replace(" ", "+")
-        # url = "http://www.ccma.cat/tv3/alacarta/cercador/?items_pagina=15&profile=videos&text="+search_string
-        # listSearchVideos(url)
-        
-# def listSearchVideos(url)
-    # xbmc.log('listSearchVideos)
-    # link = getUrl(url)
+def search():
+    xbmc.log("--------------search----------")
     
-    # match = re.compile('<li class="F-llistat-item">[^<]*<a.+?href="(.+?)">').findall(link)
-   
-    # if len(match) <> 0: 
-    
-        # #test code
-        # url_test = match[0]
-        # test = re.compile('/tv3/alacarta/.+?/([0-9]{7})').findall(url_test)
-        # if len(test) < 1:
-            # match = re.compile('<article class="M-destacat.+?">[^<]*<a.+?href="(.+?)" title=".+?">').findall(link)
+    keyboard = xbmc.Keyboard('', addon.getLocalizedString(t_cercar).encode("utf-8"))
+    keyboard.doModal()
+    if keyboard.isConfirmed() and keyboard.getText():
+        search_string = keyboard.getText().replace(" ", "+")
+        url = "http://www.ccma.cat/tv3/alacarta/cercador/?items_pagina=15&profile=videos&text="+search_string
+        listVideos(url, True)
         
-        
-        # if len(match) <> 0:
-        
-            # for c in match:
-                
-                # code = c[-8:-1]
-                # data = getDataVideo(url_datavideos + code + '&profile=pc')
-                    
-                # if data <> None and len(data) > 0:
-                    # addLink(data)
-                
-               
-            # #Pagination
-            # match = re.compile('<p class="numeracio">P\xc3\xa0gina (\d+) de (\d+)</p>').findall(link)
-            # if len(match) <> 0:
-                # actualPage = int(match[0][0])
-                # totalPages = int(match[0][1])
-                    
-                # if actualPage < totalPages:
-                    # nextPage = str(actualPage + 1)
-                    # url_next = url + '?text=&profile=&items_pagina=15&pagina=' + nextPage
-                    # addDir(addon.getLocalizedString(t_seguent).encode("utf-8"), url_next, "listvideos", "")
-                    
-            # xbmcplugin.endOfDirectory(addon_handle)
             
     
 def addDir(name, url, mode,iconimage):
@@ -691,7 +659,11 @@ elif mode[0]=='sections':
 
 elif mode[0]=='listvideos':
    
-    listVideos(url[0])
+    listVideos(url[0], None)
+    
+elif mode[0]=='listvideoscercar':
+   
+    listVideos(url[0], True)
     
 
 elif mode[0]=='dirAZemisio':
@@ -712,6 +684,10 @@ elif mode[0]=='listAZtots':
     
 elif mode[0]=='directe':
    
-    listDirecte()     
+    listDirecte() 
+
+elif mode[0]=='cercar':
+   
+    search()    
     
     
