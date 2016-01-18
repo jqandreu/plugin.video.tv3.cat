@@ -535,13 +535,24 @@ def addLink(data):
         else:
             descripcio = descripcio.replace('<br />', '')
             
+        header = ""
         if programa <> None:
             if type(programa) is int or type(programa) is float:
                 programa = str(programa)
-            descripcio = '[B]' + programa + '[/B]' + '[CR]' + descripcio
+            header = '[B]' + programa + '[/B]' + '[CR]'
             
            
         infolabels = {}
+        
+           
+        if data_emisio <> None:
+            dt = data_emisio[0:10]
+            year = data_emisio[6:10]
+            infolabels['aired'] = dt
+            infolabels['year'] = year
+            header = header + dt + '[CR]'
+            
+        descripcio = header + descripcio
         
         if titol <> None:
             infolabels['title'] = titol
@@ -556,12 +567,7 @@ def addLink(data):
           
         if tematica <> None:
             infolabels['genre'] = tematica
-           
-        if data_emisio <> None:
-            dt = data_emisio[0:10]
-            year = data_emisio[6:10]
-            infolabels['aired'] = dt
-            infolabels['year'] = year
+        
             
           
         liz.setInfo('video', infolabels)
