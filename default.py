@@ -20,8 +20,38 @@ import json
 import math
 import time
 from BeautifulSoup import BeautifulSoup
+<<<<<<< HEAD
 from resources.lib.tv3_strings import TV3Strings
 from resources.lib.utils import buildUrl, getHtml, getDataVideo, toSeconds
+=======
+
+
+#Localized strings
+t_avuidestaquem=30001
+t_noperdis=30002
+t_mesvist=30003
+t_programes=30004
+t_series=30005
+t_informatius=30006
+t_entreteniment=30007
+t_esports=30008
+t_documentals=30009
+t_divulgacio=30010
+t_cultura=30011
+t_musica=30012
+t_tots=30013
+t_emissio=30014
+t_seguent=30015
+t_anterior=30016
+t_directe=30017
+t_tv3=30018
+t_canal324=30019
+t_c33super3=30020
+t_esport3=30021
+t_cercar=30022
+t_coleccions=30023
+
+>>>>>>> 9ac9dbf9e533374637b0d13c1303e0211a28784b
 
 url_base = 'http://www.ccma.cat'
 url_alacarta = 'http://www.ccma.cat/tv3/alacarta/'
@@ -47,6 +77,7 @@ def index():
     xbmc.log( "--------------index------------------")
     
     
+<<<<<<< HEAD
     addDir(strs.get('avuidestaquem'),"","destaquem","")
     addDir(strs.get('noperdis'), url_coleccions,"noperdis","")
     addDir(strs.get('mesvist'), url_mesvist,"mesvist","")
@@ -54,6 +85,15 @@ def index():
     addDir(strs.get('programes'),"","programes","")
     addDir(strs.get('directe'),"","directe","")
     addDir(strs.get('cercar'),"","cercar","")
+=======
+    addDir(addon.getLocalizedString(t_avuidestaquem).encode("utf-8"),"","destaquem","")
+    addDir(addon.getLocalizedString(t_noperdis).encode("utf-8"),"","noperdis","")
+    addDir(addon.getLocalizedString(t_mesvist).encode("utf-8"),"","mesvist","")
+    addDir(addon.getLocalizedString(t_coleccions).encode("utf-8"),"","coleccions","")
+    addDir(addon.getLocalizedString(t_programes).encode("utf-8"),"","programes","")
+    addDir(addon.getLocalizedString(t_directe).encode("utf-8"),"","directe","")
+    addDir(addon.getLocalizedString(t_cercar).encode("utf-8"),"","cercar","")
+>>>>>>> 9ac9dbf9e533374637b0d13c1303e0211a28784b
     
     xbmcplugin.endOfDirectory(addon_handle)
     
@@ -354,6 +394,7 @@ def listColeccions():
             colecc = soup.findAll("a", {"class" : "media-object"})
             xbmc.log("Col·leccions - elements trobats: " + str(len(colecc)))
             
+<<<<<<< HEAD
             for a in colecc:
                
                 url = a["href"]
@@ -371,9 +412,52 @@ def listColeccions():
             xbmc.log("Exception KeyError listColeccions: " + str(e))
         except Exception as e:
             xbmc.log("Exception listColeccions: " + str(e))
+=======
+            if len(data) > 0:
+                addLink(data)
+    except AttributeError as e:
+        xbmc.log("Exception AtributeError listMesVist: " + str(e))
+    except KeyError as e:
+        xbmc.log("Exception KeyError listMesVist: " + str(e))
+    except Exception as e:
+        xbmc.log("Exception listMesVist: " + str(e))
+>>>>>>> 9ac9dbf9e533374637b0d13c1303e0211a28784b
         
             
         xbmcplugin.endOfDirectory(addon_handle) 
+    
+def listColeccions():
+    xbmc.log("--------------listColeccions----------")
+    
+    link = getUrl(url_coleccions)
+    
+    soup = BeautifulSoup(link)
+    
+    try: 
+        
+        colecc = soup.findAll("a", {"class" : "media-object"})
+        xbmc.log("Col·leccions - elements trobats: " + str(len(colecc)))
+        
+        for a in colecc:
+           
+            url = a["href"]
+            url = url_base + url
+            t = a["title"]
+            titol = t.encode("utf-8")
+            xbmc.log("Col·leccions -t: " + titol)
+            img = a.img["src"]
+          
+            addDir(titol ,url,'listvideos', img)
+            
+    except AttributeError as e:
+        xbmc.log("Exception AtributeError listColeccions: " + str(e))
+    except KeyError as e:
+        xbmc.log("Exception KeyError listColeccions: " + str(e))
+    except Exception as e:
+        xbmc.log("Exception listColeccions: " + str(e))
+    
+        
+    xbmcplugin.endOfDirectory(addon_handle) 
     
 def dirSections():
    
@@ -667,6 +751,7 @@ def listVideos(url, cercar, program):
     
     link = getHtml(url)
     
+<<<<<<< HEAD
     
     if link:
    
@@ -702,6 +787,44 @@ def listVideos(url, cercar, program):
             for l in links:
             
                 try:     
+=======
+    #match = re.compile('<li class="F-llistat-item">[^<]*<a.+?href="(.+?)">').findall(link)
+    #xbmc.log("match - elemtents trobats: " + str(match))
+    soup = BeautifulSoup(link)
+    links = None
+    try:
+        links = soup.findAll("div", {"class" : "F-itemContenidorIntern C-destacatVideo"})
+        
+        if len(links) == 0:
+            links = soup.findAll("li", {"class" : "F-llistat-item"})
+        
+       
+    except AttributeError as e:
+        xbmc.log("Exception AtributeError listVideos: " + str(e))
+    except KeyError as e:
+        xbmc.log("Exception KeyError  listVideos: " + str(e))
+    except Exception as e:
+        xbmc.log("Exception listVideos: " + str(e))
+    
+    
+    
+    if len(links) <> 0: 
+    
+        #test code
+        #url_test = links[0]
+        url_test = links[0].a["href"]
+        
+        test = re.compile('/tv3/alacarta/.+?/([0-9]{7})').findall(url_test)
+        if len(test) < 1:
+            links = re.compile('<article class="M-destacat.+?">[^<]*<a.+?href="(.+?)" title=".+?">').findall(link)
+        
+        
+        if len(links) <> 0:
+        
+            for l in links:
+                
+                c = l.a["href"]
+>>>>>>> 9ac9dbf9e533374637b0d13c1303e0211a28784b
                 
                     titElement = l.find("h3", {"class" : "titol"})
                     xbmc.log("lisVideos--bucle addVideo--Titol: %s" % (str(titElement)))
@@ -812,7 +935,10 @@ def addDir(name, url, mode,iconimage,program=None):
     liz = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
     liz.setInfo(type="Video", infoLabels={"title":name})
     liz.setArt({'fanart' : iconimage})
+<<<<<<< HEAD
     
+=======
+>>>>>>> 9ac9dbf9e533374637b0d13c1303e0211a28784b
     ok = xbmcplugin.addDirectoryItem(handle=addon_handle,url=u,listitem=liz,isFolder=True)
     return ok
     
@@ -1055,10 +1181,14 @@ elif mode[0]=='cercar':
 
 elif mode[0]=='coleccions':
    
+<<<<<<< HEAD
     listColeccions()
     
 elif mode[0]=='playVideo':
    
     playVideo(url[0])         
+=======
+    listColeccions()        
+>>>>>>> 9ac9dbf9e533374637b0d13c1303e0211a28784b
     
     
