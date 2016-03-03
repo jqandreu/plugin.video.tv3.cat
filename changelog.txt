@@ -1,6 +1,11 @@
+v1.3.6
+- Fixed website changes
+- Improved efficiency in listing videos
+
 v1.3.5
 - Improved video info
 - Updated python version
+- Added new section Coleccions
 
 v1.3.4
 - Fixed website changes
