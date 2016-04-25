@@ -499,35 +499,43 @@ def listDirecte():
         
         if arafemtv3:
             infolabelstv3['title'] = arafemtv3
+            infotv3 = '[B]' + arafemtv3 + '[/B]' + '[CR]'
         if arafemtv3_sinop:
             if type(arafemtv3) is int or type(arafemtv3) is float:
                 arafemtv3 = str(arafemtv3)
-            arafemtv3_sinop = '[B]' + arafemtv3 + '[/B]' + '[CR]' + arafemtv3_sinop
-            infolabelstv3['plot'] = arafemtv3_sinop
+            infotv3 = infotv3 + arafemtv3_sinop
+            
+        infolabelstv3['plot'] = infotv3
             
         if arafem33:
             infolabels33['title'] = arafem33
+            info33 = '[B]' + arafem33 + '[/B]' + '[CR]' 
         if arafem33_sinop:
             if type(arafem33) is int or type(arafem33) is float:
                 arafem33 = str(arafem33)
-            arafem33_sinop = '[B]' + arafem33 + '[/B]' + '[CR]' + arafem33_sinop
-            infolabels33['plot'] = arafem33_sinop
+            info33 = info33 + arafem33_sinop
+            
+        infolabels33['plot'] = info33
             
         if arafemesp3:
             infolabelsesp3['title'] = arafemesp3
+            infoesp3 = '[B]' + arafemesp3 + '[/B]' + '[CR]'
         if arafemesp3_sinop:
             if type(arafemesp3) is int or type(arafemesp3) is float:
                 arafemesp3 = str(arafemesp3)
-            arafemesp3_sinop = '[B]' + arafemesp3 + '[/B]' + '[CR]' + arafemesp3_sinop
-            infolabelsesp3['plot'] = arafemesp3_sinop
+            infoesp3 = infoesp3  + arafemesp3_sinop
+            
+        infolabelsesp3['plot'] = infoesp3
             
         if arafem324:
             infolabels324['title'] = arafem324
+            info324 = '[B]' + arafem324 + '[/B]' + '[CR]' 
         if arafem324_sinop:
             if type(arafem324) is int or type(arafem324) is float:
                 arafem324 = str(arafem324)
-            arafem324_sinop = '[B]' + arafem324 + '[/B]' + '[CR]' + arafem324_sinop
-            infolabels324['plot'] = arafem324_sinop
+            info324 = info324 + arafem324_sinop
+            
+        infolabels324['plot'] = info324
             
         
  
