@@ -1,3 +1,8 @@
+﻿v1.3.9
+- Canviada reproducció de videos a HD
+
+- Changed videos playback to HD
+
 v1.3.8
 - Corregits canvis al website
 
