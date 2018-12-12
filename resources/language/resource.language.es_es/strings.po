@@ -17,71 +17,71 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "#30001"
-msgid "Avui destaquem"
+msgid "Today Featured"
 msgstr "Hoy destacamos"
 
 msgctxt "#30002"
-msgid "No t'ho perdis"
+msgid "Don't miss"
 msgstr "No te lo pierdas"
 
 msgctxt "#30003"
-msgid "El més vist"
+msgid "Most viewed"
 msgstr "Lo más visto"
 
 msgctxt "#30004"
-msgid "Programes"
+msgid "Programs"
 msgstr "Programas"
 
 msgctxt "#30005"
-msgid "Sèries"
+msgid "Series"
 msgstr "Series"
 
 msgctxt "#30006"
-msgid "Informatius"
+msgid "News"
 msgstr "Informativos"
 
 msgctxt "#30007"
-msgid "Entreteniment"
+msgid "Entertainment"
 msgstr "Entretenimiento"
 
 msgctxt "#30008"
-msgid "Esports"
+msgid "Sports"
 msgstr "Deportes"
 
 msgctxt "#30009"
-msgid "Documentals"
+msgid "Documentaries"
 msgstr "Documentales"
 
 msgctxt "#30010"
-msgid "Divulgació"
+msgid "Divulgation"
 msgstr "Divulgación"
 
 msgctxt "#30011"
-msgid "Cultura"
+msgid "Culture"
 msgstr "Cultura"
 
 msgctxt "#30012"
-msgid "Música"
+msgid "Music"
 msgstr "Música"
 
 msgctxt "#30013"
-msgid "Tots A-Z"
+msgid "All A-Z"
 msgstr "Todos A-Z"
 
 msgctxt "#30014"
-msgid "En emissió A-Z"
+msgid "Aired A-Z"
 msgstr "En emisión A-Z"
 
 msgctxt "#30015"
-msgid ">>Pàgina següent"
+msgid ">>Next Page"
 msgstr ">>Página siguiente"
 
 msgctxt "#30016"
-msgid ">>Pàgina anterior"
+msgid ">>Previous Page"
 msgstr ">>Página anterior"
 
 msgctxt "#30017"
-msgid "Canals en directe"
+msgid "Live channels"
 msgstr "Canales en directo"
 
 msgctxt "#30018"
@@ -101,25 +101,25 @@ msgid "Esport 3"
 msgstr "Esport 3"
 
 msgctxt "#30022"
-msgid "Cercar"
+msgid "Search"
 msgstr "Buscar"
 
 msgctxt "#30023"
-msgid "Col·leccions"
+msgid "Collections"
 msgstr "Colecciones"
 
 msgctxt "#30024"
-msgid "TV3 (Emissió internacional)"
+msgid "TV3 (International broadcast)"
 msgstr "TV3 (Emisión internacional)"
 
 msgctxt "#30025"
-msgid "Canal 324 (Emissió internacional)"
+msgid "Canal 324 (International broadcast)"
 msgstr "Canal 324 (Emisión internacional)"
 
 msgctxt "#30026"
-msgid "Canal 33-Super 3 (Emissió internacional)"
+msgid "Canal 33-Super 3 (International broadcast)"
 msgstr "Canal 33-Super 3 (Emisión internacional)"
 
 msgctxt "#30027"
-msgid "Esport 3 (Emissió internacional)"
+msgid "Esport 3 (International broadcast)"
 msgstr "Esport 3 (Emisión internacional)"
