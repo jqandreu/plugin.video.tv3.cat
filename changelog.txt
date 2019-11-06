@@ -1,6 +1,4 @@
 ﻿v1.4.1
-- Corregits canvis al website. Corregits errors en les seccions "Avui destaquem" i "Col·leccions"
-
 - Fixed website changes. Fixed errors in "Today featured" and "Colecctions"
 
 v1.4.0
