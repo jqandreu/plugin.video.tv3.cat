@@ -4,12 +4,12 @@ import xbmc
 
 from BeautifulSoup import BeautifulSoup
 
-from resources.lib.tv3cat.DirAZemisio import DirAZemisio
-from resources.lib.tv3cat.DirAZtots import DirAZtots
-from resources.lib.tv3cat.Home import Home
+from resources.lib.tv3cat import DirAZemisio
+from resources.lib.tv3cat import DirAZtots
+from resources.lib.tv3cat import Home
 from resources.lib.tv3cat.Images import Images
-from resources.lib.tv3cat.Sections import Sections
-from resources.lib.video import Urls
+from resources.lib.tv3cat import Sections
+from resources.lib.utils import Urls
 from resources.lib.video.FolderVideo import FolderVideo
 from resources.lib.video.Video import Video
 from resources.lib.tv3cat.TV3Strings import TV3Strings
@@ -22,17 +22,17 @@ class TV3cat:
         self.images = Images(addon_path)
         self.addon_path = addon_path
 
-        self.home = Home(addon)
-        self.sections = Sections(addon)
-        self.dirAZemisio = DirAZemisio()
-        self.dirAZtots = DirAZtots()
+        xbmc.log("plugin.video.tv3.cat classe TV3cat - init() ")
 
+    # mode = None
     def listHome(self):
-        return self.home.list
+        xbmc.log("plugin.video.tv3.cat classe Tv3cat - listHome() ")
 
+        return Home.getList(self.strs)
+
+    # mode = destaquem
     def listDestaquem(self):
-        xbmc.log("--------------listDestaquem----------")
-
+        xbmc.log("plugin.video.tv3.cat classe Tv3cat - listDestaquem() ")
         html_destacats = getHtml(Urls.url_alacarta)
 
         lVideos = []
@@ -75,12 +75,12 @@ class TV3cat:
             except Exception as e:
                 xbmc.log("Exception Item destacat: " + str(e))
 
-        if len(lVideos) > 0:
-            return lVideos
-        else:
-            return None
+        xbmc.log("listDestaquem len: " + str(len(lVideos)))
+
+        return lVideos
 
 
+    # mode = noperdis
     def listNoPerdis(self):
         xbmc.log("--------------listNoPerdis----------")
 
@@ -121,11 +121,10 @@ class TV3cat:
             except Exception as e:
                 xbmc.log("Exception Item destacat: " + str(e))
 
-        if len(lVideos) > 0:
-            return lVideos
-        else:
-            return None
+        return lVideos
 
+
+    # mode = mesvist
     def listMesVist(self):
         xbmc.log("--------------listMesVist----------")
 
@@ -168,16 +167,15 @@ class TV3cat:
             except Exception as e:
                 xbmc.log("Exception listMesVist: " + str(e))
 
-        if len(lVideos) > 0:
-            return lVideos
-        else:
-            return None
+        return lVideos
 
 
+
+    # mode = coleccions
     def listColeccions(self):
         xbmc.log("--------------listColeccions----------")
 
-        lFolderVideo = []
+        lFolderVideos = []
 
         link = getHtml(Urls.url_coleccions)
 
@@ -197,8 +195,8 @@ class TV3cat:
                     titol = t.encode("utf-8")
                     img = a.img["src"]
 
-                    foldVideo = FolderVideo(titol,url, 'listvideos', img, img)
-                    lFolderVideo.append(foldVideo)
+                    foldVideo = FolderVideo(titol,url, 'getlistvideos', img, img)
+                    lFolderVideos.append(foldVideo)
 
             except AttributeError as e:
                 xbmc.log("Exception AtributeError listColeccions: " + str(e))
@@ -207,27 +205,29 @@ class TV3cat:
             except Exception as e:
                 xbmc.log("Exception listColeccions: " + str(e))
 
-        if len(lFolderVideo) > 0:
-            return lFolderVideo
-        else:
-            return None
 
+        return lFolderVideos
+
+
+    # mode = programes
     def dirSections(self):
 
-        return self.sections.list
+        return Sections.getList(self.strs)
 
+    # mode = dirAZemisio
     def dirAZemisio(self):
 
-        return self.dirAZemisio()
+        return DirAZemisio.getList()
 
+    #mode = dirAZtots
     def dirAZtots(self):
 
-        return self.dirAZtots()
+        return DirAZtots.getList()
 
+    # mode = sections
+    def programsSections(self, url):
 
-    def programsSections(url):
-
-        lFolderVideo = []
+        lFolderVideos = []
 
         link = getHtml(Urls.url_programes_emisio + url)
 
@@ -265,7 +265,7 @@ class TV3cat:
                         xbmc.log("url final: " + str(url_final))
 
                         foldVideo = FolderVideo(titol, url, 'listvideos', "", "")
-                        lFolderVideo.append(foldVideo)
+                        lFolderVideos.append(foldVideo)
 
             except AttributeError as e:
                 xbmc.log("Exception AtributeError listSections: " + str(e))
@@ -274,14 +274,14 @@ class TV3cat:
             except Exception as e:
                 xbmc.log("Exception listSections: " + str(e))
 
-        if len(lFolderVideo) > 0:
-            return lFolderVideo
-        else:
-            return None
+        return lFolderVideos
 
 
+    # mode = directe
     def listDirecte(self):
-        # info channels
+        xbmc.log("-----------------listDirecte--------------------")
+        lVideos = []
+
         data = getDataVideo(Urls.url_arafem)
 
         if data:
@@ -362,26 +362,35 @@ class TV3cat:
 
             infolabels324['plot'] = info324
 
-        tv3Directe = Video(self.strs.get('tv3'), self.images.thumb_tv3, self.images.thumb_tv3, infolabelstv3, Urls.url_directe_tv3)
-        c324Directe = Video(self.strs.get('canal324'), self.images.thumb_tv3, self.images.thumb_tv3, infolabels324, Urls.url_directe_324)
-        c33s3Directe = Video(self.strs.get('c33super3'), self.images.thumb_tv3, self.images.thumb_tv3, infolabels33, Urls.url_directe_c33s3)
-        sps3Directe = Video(self.strs.get('esport3'), self.images.thumb_tv3, self.images.thumb_tv3, infolabelsesp3, Urls.url_directe_esport3)
+        tv3Directe = Video(self.strs.get('tv3'), self.images.thumb_tv3, self.images.thumb_tv3, infolabelstv3, Urls.url_directe_tv3, "")
+        c324Directe = Video(self.strs.get('canal324'), self.images.thumb_tv3, self.images.thumb_tv3, infolabels324, Urls.url_directe_324, "")
+        c33s3Directe = Video(self.strs.get('c33super3'), self.images.thumb_tv3, self.images.thumb_tv3, infolabels33, Urls.url_directe_c33s3, "")
+        sps3Directe = Video(self.strs.get('esport3'), self.images.thumb_tv3, self.images.thumb_tv3, infolabelsesp3, Urls.url_directe_esport3, "")
 
-        tv3DirecteInt = Video(self.strs.get('tv3_int'), self.images.thumb_tv3, self.images.thumb_tv3, infolabelstv3, Urls.url_directe_tv3_int)
-        c324DirecteInt = Video(self.strs.get('canal324_int'), self.images.thumb_tv3, self.images.thumb_tv3, infolabels324, Urls.url_directe_324_int)
-        c33s3DirecteInt = Video(self.strs.get('c33super3_int'), self.images.thumb_tv3, self.images.thumb_tv3, infolabels33, Urls.url_directe_c33s3_int)
-        sps3DirecteInt = Video(self.strs.get('esport3_int'), self.images.thumb_tv3, self.images.thumb_tv3, infolabelsesp3, Urls.url_directe_esport3_int)
+        tv3DirecteInt = Video(self.strs.get('tv3_int'), self.images.thumb_tv3, self.images.thumb_tv3, infolabelstv3, Urls.url_directe_tv3_int, "")
+        c324DirecteInt = Video(self.strs.get('canal324_int'), self.images.thumb_tv3, self.images.thumb_tv3, infolabels324, Urls.url_directe_324_int, "")
+        c33s3DirecteInt = Video(self.strs.get('c33super3_int'), self.images.thumb_tv3, self.images.thumb_tv3, infolabels33, Urls.url_directe_c33s3_int, "")
+        sps3DirecteInt = Video(self.strs.get('esport3_int'), self.images.thumb_tv3, self.images.thumb_tv3, infolabelsesp3, Urls.url_directe_esport3_int, "")
 
         lVideos = [tv3Directe, c33s3Directe, c324Directe, sps3Directe, tv3DirecteInt, c33s3DirecteInt, c324DirecteInt, sps3DirecteInt]
 
         return lVideos
 
 
-    def programesAZ(url, letters):
+    # mode = progAZ
+    def programesAZ(self, paramUrl, letters):
+        xbmc.log("--------------------programesAZ------------------")
 
         lFolderVideos = []
+        url = ""
+
+        if paramUrl == "emisio":
+            url = Urls.url_programes_emisio
+        else:
+            url = Urls.url_programes_tots
 
         html = getHtml(url)
+
 
         if html:
 
@@ -390,6 +399,9 @@ class TV3cat:
             elements = soup.findAll("ul", {"class": "R-abcProgrames"})
 
             li = None
+
+            xbmc.log("programesAZ emissio - elements")
+            xbmc.log(str(elements))
 
             if len(elements) > 0:
 
@@ -453,16 +465,17 @@ class TV3cat:
                                     else:
                                         url_final = urlProg + 'ultims-programes/'
 
-                                folderVideo = FolderVideo(titol, url_final, 'listvideos', "", "")
+                                folderVideo = FolderVideo(titol, url_final, 'getlistvideos', "", "")
                                 lFolderVideos.append(folderVideo)
 
-        if len(lFolderVideos) > 0:
-            return lFolderVideos
-        else:
-            return  None
 
-    def listVideos(self, url, search):
+        return  lFolderVideos
+
+    # mode = getlistvideos
+    def getListVideos(self, url, cercar, program):
+        xbmc.log("---------------getListVideos------------------------------")
         lVideos = []
+        titol = ""
 
         link = getHtml(url)
 
@@ -497,14 +510,17 @@ class TV3cat:
             except Exception as e:
                 xbmc.log("listVideos--getLinks--Exception listVideos: " + str(e))
 
+            xbmc.log("getlistvideos - numero videos: " + str(len(links)))
             if links:
 
+
                 for l in links:
+                    #xbmc.log("getList Videos l in links: " + str(l))
 
                     try:
 
                         titElement = l.find("h3", {"class": "titol"})
-                        xbmc.log("lisVideos--bucle addVideo--Titol: %s" % (str(titElement)))
+
 
                         if titElement:
                             titol = titElement.a.string
@@ -513,15 +529,22 @@ class TV3cat:
                         else:  # Coleccions
                             titol = l.a["title"]
 
-                        urlvideo = l.a["href"]
+                        #xbmc.log("getListVideos Titol: " + titol)
 
+                        urlvideo = l.a["href"]
+                        urlvideo = 'https://www.ccma.cat' + urlvideo
+
+                        xbmc.log("getListVideos - urlvideo: " + urlvideo)
+
+                        durada = ""
                         durElement = l.find("time", {"class": "duration"})
                         if durElement:
                             durada = toSeconds(durElement["datetime"])
-                        else:
-                            durada = None
 
-                        img = "https:" + l.img["src"]
+                        img = ""
+
+                        img = l.img["src"]
+                        #img = l.img["data-src"]
 
                         datElement = l.find("time", {"class": "data"})
                         if datElement:
@@ -533,10 +556,10 @@ class TV3cat:
                         if resElement:
                             resum = resElement.string
                         else:
-                            resum = None
+                            resum = ""
 
                         # Search
-                        if search:
+                        if cercar:
                             prElement = l.find("span", {"class": "programa"})
 
                             if prElement:
@@ -547,12 +570,13 @@ class TV3cat:
 
 
                         header = ""
-                        if programa != None:
-                            if type(programa) is int or type(programa) is float:
-                                programa = str(programa)
-                            header = '[B]' + programa + '[/B]' + '[CR]'
+                        if program != None:
+                            if type(program) is int or type(program) is float:
+                                program = str(program)
+                            header = '[B]' + program + '[/B]' + '[CR]'
 
                         infolabels = {}
+
                         if data != None:
                             dt = data[0:10]
                             year = data[6:10]
@@ -564,7 +588,7 @@ class TV3cat:
 
                         infolabels['plot'] = resum
 
-                        video = Video(titol, img, img, infolabels, urlvideo)
+                        video = Video(titol, img, img, infolabels, urlvideo, durada )
                         lVideos.append(video)
 
                     except AttributeError as e:
@@ -577,12 +601,10 @@ class TV3cat:
                         xbmc.log("listVideos--bucle addVideo--Exception: " + str(e))
 
                 else:
-                    xbmc.log("No s'ha trobat cap video")
+                    xbmc.log("getListVideos - No s'ha trobat cap video")
 
-        if len(lVideos) > 0:
-            return lVideos
-        else:
-            return None
+
+        return lVideos
 
 
     def getVideo(self, data):
@@ -649,19 +671,24 @@ class TV3cat:
             if tematica != None:
                 infolabels['genre'] = tematica
 
-            video = Video(titol, image, image, infolabels, urlVideo )
+            video = Video(titol, image, image, infolabels, urlVideo, durada )
 
             return video
 
         else:
             return None
 
+    #mode = cercar
     def search(self):
+        lVideos = []
 
         keyboard = xbmc.Keyboard('', self.strs.get('cercar'))
         keyboard.doModal()
         if keyboard.isConfirmed() and keyboard.getText():
             search_string = keyboard.getText().replace(" ", "+")
             url = "http://www.ccma.cat/tv3/alacarta/cercador/?items_pagina=15&profile=videos&text=" + search_string
-            self.listVideos(url, True)
+
+            lVideos = self.getListVideos(url, True,"")
+
+        return lVideos
 

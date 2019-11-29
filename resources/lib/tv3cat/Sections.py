@@ -2,22 +2,21 @@ from resources.lib.video.FolderVideo import FolderVideo
 from resources.lib.tv3cat.TV3Strings import TV3Strings
 
 
-class Sections:
+def getList(strings):
 
-    def __init__(self, addon):
-        self.strs = TV3Strings(addon)
+    series = FolderVideo(strings.get('series'), "/series/", "sections", "", "")
+    information = FolderVideo(strings.get('informatius'), "/informatius/", "sections", "", "")
+    entreteniment = FolderVideo(strings.get('entreteniment'), "/entreteniment/", "sections", "",
+                                     "")
+    sports = FolderVideo(strings.get('esports'), "/esports/", "sections", "", "")
+    documentals = FolderVideo(strings.get('documentals'), "/documentals/", "sections", "", "")
+    divulgacio = FolderVideo(strings.get('divulgacio'), "/divulgacio/", "sections", "", "")
+    cultura = FolderVideo(strings.get('cultura'), "/cultura/", "sections", "", "")
+    musica = FolderVideo(strings.get('musica'), "/musica/", "sections", "", "")
+    emissio = FolderVideo(strings.get('emissio'), "/programes/", "dirAZemisio", "", "")
+    tots = FolderVideo(strings.get('tots'), "/programes-tots/", "dirAZtots", "", "")
 
-        self.series = FolderVideo(self.strs.get('series'), "/series/", "sections", "", "")
-        self.information = FolderVideo(self.strs.get('informatius'), "/informatius/", "sections", "", "")
-        self.entreteniment = FolderVideo(self.strs.get('entreteniment'), "/entreteniment/", "sections", "",
-                                         "")
-        self.sports = FolderVideo(self.strs.get('esports'), "/esports/", "sections", "", "")
-        self.documentals = FolderVideo(self.strs.get('documentals'), "/documentals/", "sections", "", "")
-        self.divulgacio = FolderVideo(self.strs.get('divulgacio'), "/divulgacio/", "sections", "", "")
-        self.cultura = FolderVideo(self.strs.get('cultura'), "/cultura/", "sections", "", "")
-        self.musica = FolderVideo(self.strs.get('musica'), "/musica/", "sections", "", "")
-        self.emissio = FolderVideo(self.strs.get('emissio'), "/programes/", "sections", "", "")
-        self.tots = FolderVideo(self.strs.get('tots'), "/programes-tots/", "sections", "", "")
+    list = [series, information, entreteniment, sports, documentals, divulgacio,
+                 cultura, musica, emissio, tots]
 
-        self.list = [self.series, self.information, self.entreteniment, self.sports, self.documentals, self.divulgacio,
-                     self.cultura, self.musica, self.emissio, self.tots]
+    return list
