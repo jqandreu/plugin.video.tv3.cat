@@ -9,7 +9,9 @@
 import urllib
 import urllib2
 import json
+import xbmcgui
 import xbmc
+import requests
 
 
 def buildUrl(query, base_url):
@@ -24,11 +26,15 @@ def getHtml(url):
         link = response.read()
         response.close()
 
+        #req = requests.get(url)
+
         return link
 
     except urllib2.URLError as e:
+    #except requests.exceptions.RequestException as e:
         xbmc.log("getHtml error - " + str(e))
         xbmc.log("getHtml url - " + url)
+        xbmcgui.Dialog().notification("Error a la connexio", "No s'ha pogut connectar", xbmcgui.NOTIFICATION_INFO)
 
         return None
 

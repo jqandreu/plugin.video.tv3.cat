@@ -157,14 +157,19 @@ class UI:
     def listVideos(self, lVideos):
 
         xbmc.log("--------List videos ----------")
-        if not lVideos:
-            xbmc.log("Numero videos: 0")
+        last = lVideos[1]
+        listVideos = lVideos[0]
+        if not listVideos:
+            xbmc.log("UI - listVideos - Numero videos: 0")
         else:
-            xbmc.log("Numero videos: " + str(len(lVideos)))
+            xbmc.log("UI - listVideos - Numero videos: " + str(len(listVideos)))
 
-            for video in lVideos:
+
+
+            for video in listVideos:
 
                 urlVideo = video.url
+                xbmc.log("UI - listVideos - urlVideo: " + urlVideo)
                 iconImage = video.iconImage
                 thumbImage = video.thumbnailImage
                 durada = video.durada
@@ -180,12 +185,28 @@ class UI:
                 liz.addStreamInfo('video', {'duration': durada})
                 liz.setProperty('isPlayable', 'true')
                 xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=urlPlugin, listitem=liz)
+
+            if last:
+                mode = last.mode
+                name = last.name
+                url = last.url
+                xbmc.log("UI - listVideos - urlNext: " + url)
+                iconImage = last.iconImage
+                thumbImage = last.thumbnailImage
+
+                urlPlugin = buildUrl({'mode': mode, 'name': name, 'url': url}, self.base_url)
+                liz = xbmcgui.ListItem(name, iconImage=iconImage, thumbnailImage=thumbImage)
+                liz.setInfo(type="Video", infoLabels={"title": name})
+                liz.setArt({'fanart': iconImage})
+
+                xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=urlPlugin, listitem=liz, isFolder=True)
+
             xbmcplugin.endOfDirectory(self.addon_handle)
 
     def playVideo(self,url):
         code = url[-8:-1]
-        xbmc.log("plugin.video.tv3.cat - playVideo - code: " + str(code))
-        xbmc.log("plugin.video.tv3.cat - playVideo - url: " + str(url))
+        xbmc.log("UI - playVideo")
+
 
         # html_data = getHtml(url_datavideos + code + '&profile=pc')
         #

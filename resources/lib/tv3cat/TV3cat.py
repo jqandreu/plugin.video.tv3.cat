@@ -4,12 +4,14 @@ import xbmc
 
 from BeautifulSoup import BeautifulSoup
 
+
 from resources.lib.tv3cat import DirAZemisio
 from resources.lib.tv3cat import DirAZtots
 from resources.lib.tv3cat import Home
 from resources.lib.tv3cat.Images import Images
 from resources.lib.tv3cat import Sections
 from resources.lib.utils import Urls
+from resources.lib.utils.Urls import url_base
 from resources.lib.video.FolderVideo import FolderVideo
 from resources.lib.video.Video import Video
 from resources.lib.tv3cat.TV3Strings import TV3Strings
@@ -77,7 +79,9 @@ class TV3cat:
 
         xbmc.log("listDestaquem len: " + str(len(lVideos)))
 
-        return lVideos
+        result = [None] * 2
+        result[0] = lVideos
+        return result
 
 
     # mode = noperdis
@@ -121,7 +125,9 @@ class TV3cat:
             except Exception as e:
                 xbmc.log("Exception Item destacat: " + str(e))
 
-        return lVideos
+        result = [None] * 2
+        result[0] = lVideos
+        return result
 
 
     # mode = mesvist
@@ -167,7 +173,9 @@ class TV3cat:
             except Exception as e:
                 xbmc.log("Exception listMesVist: " + str(e))
 
-        return lVideos
+        result = [None] * 2
+        result[0] = lVideos
+        return result
 
 
 
@@ -226,7 +234,7 @@ class TV3cat:
 
     # mode = sections
     def programsSections(self, url):
-
+        xbmc.log("-------------------------programsSections----------------------")
         lFolderVideos = []
 
         link = getHtml(Urls.url_programes_emisio + url)
@@ -239,7 +247,6 @@ class TV3cat:
                 links = soup.findAll("ul", {"class": "R-abcProgrames"})
 
                 for i in links:
-                    xbmc.log("------------------Grup programes per lletra------------------")
                     ls = i.findAll("li")
 
                     for li in ls:
@@ -262,9 +269,9 @@ class TV3cat:
                             else:
                                 url_final = urlProg + 'ultims-programes/'
 
-                        xbmc.log("url final: " + str(url_final))
+                        xbmc.log("programsSections url final: " + str(url_final))
 
-                        foldVideo = FolderVideo(titol, url, 'listvideos', "", "")
+                        foldVideo = FolderVideo(titol, url_final, 'getlistvideos', "", "")
                         lFolderVideos.append(foldVideo)
 
             except AttributeError as e:
@@ -374,7 +381,9 @@ class TV3cat:
 
         lVideos = [tv3Directe, c33s3Directe, c324Directe, sps3Directe, tv3DirecteInt, c33s3DirecteInt, c324DirecteInt, sps3DirecteInt]
 
-        return lVideos
+        result = [None] * 2
+        result[0] = lVideos
+        return result
 
 
     # mode = progAZ
@@ -400,8 +409,6 @@ class TV3cat:
 
             li = None
 
-            xbmc.log("programesAZ emissio - elements")
-            xbmc.log(str(elements))
 
             if len(elements) > 0:
 
@@ -474,8 +481,10 @@ class TV3cat:
     # mode = getlistvideos
     def getListVideos(self, url, cercar, program):
         xbmc.log("---------------getListVideos------------------------------")
+        result = [None] * 2
         lVideos = []
-        titol = ""
+
+        xbmc.log('getListVideos--Url listvideos: ' + url)
 
         link = getHtml(url)
 
@@ -504,107 +513,73 @@ class TV3cat:
 
 
             except AttributeError as e:
-                xbmc.log("listVideos--getLinks--Exception AtributeError listVideos: " + str(e))
+                xbmc.log("getListVideos--getLinks--Exception AtributeError listVideos: " + str(e))
             except KeyError as e:
-                xbmc.log("listVideos--getLinks--Exception KeyError  listVideos: " + str(e))
+                xbmc.log("getListVideos--getLinks--Exception KeyError  listVideos: " + str(e))
             except Exception as e:
-                xbmc.log("listVideos--getLinks--Exception listVideos: " + str(e))
+                xbmc.log("getListVideos--getLinks--Exception listVideos: " + str(e))
 
-            xbmc.log("getlistvideos - numero videos: " + str(len(links)))
             if links:
 
-
                 for l in links:
-                    #xbmc.log("getList Videos l in links: " + str(l))
 
                     try:
 
-                        titElement = l.find("h3", {"class": "titol"})
-
-
-                        if titElement:
-                            titol = titElement.a.string
-
-
-                        else:  # Coleccions
-                            titol = l.a["title"]
-
-                        #xbmc.log("getListVideos Titol: " + titol)
-
                         urlvideo = l.a["href"]
-                        urlvideo = 'https://www.ccma.cat' + urlvideo
 
-                        xbmc.log("getListVideos - urlvideo: " + urlvideo)
+                        code = urlvideo[-8:-1]
 
-                        durada = ""
-                        durElement = l.find("time", {"class": "duration"})
-                        if durElement:
-                            durada = toSeconds(durElement["datetime"])
+                        xbmc.log("--------CODIS VIDEOS------------")
+                        xbmc.log("codi: " + code)
+                        xbmc.log("url: " + Urls.url_datavideos + code + '&profile=pc')
 
-                        img = ""
+                        html_data = getHtml(Urls.url_datavideos + code + '&profile=pc')
 
-                        img = l.img["src"]
-                        #img = l.img["data-src"]
+                        html_data = html_data.decode("ISO-8859-1")
+                        data = json.loads(html_data)
 
-                        datElement = l.find("time", {"class": "data"})
-                        if datElement:
-                            data = datElement.string
-                        else:
-                            data = None
-
-                        resElement = l.find("p", {"class": "entradeta"})
-                        if resElement:
-                            resum = resElement.string
-                        else:
-                            resum = ""
-
-                        # Search
-                        if cercar:
-                            prElement = l.find("span", {"class": "programa"})
-
-                            if prElement:
-                                program = prElement.string.encode("utf-8")
-
-                        infolabels = {}
-                        infolabels['title'] = titol
+                        if len(data) > 0:
+                            video = self.getVideo(data)
+                            lVideos.append(video)
 
 
-                        header = ""
-                        if program != None:
-                            if type(program) is int or type(program) is float:
-                                program = str(program)
-                            header = '[B]' + program + '[/B]' + '[CR]'
 
-                        infolabels = {}
-
-                        if data != None:
-                            dt = data[0:10]
-                            year = data[6:10]
-                            infolabels['aired'] = dt
-                            infolabels['year'] = year
-                            header = header + dt + '[CR]'
-
-                        resum = header + resum
-
-                        infolabels['plot'] = resum
-
-                        video = Video(titol, img, img, infolabels, urlvideo, durada )
-                        lVideos.append(video)
 
                     except AttributeError as e:
-                        xbmc.log("listVideos--bucle addVideo--Exception AtributeError: " + str(e))
+                        xbmc.log("getListVideos--bucle addVideo--Exception AtributeError: " + str(e))
 
                     except KeyError as e:
-                        xbmc.log("listVideos--bucle addVideo--Exception KeyError: " + str(e))
+                        xbmc.log("getListVideos--bucle addVideo--Exception KeyError: " + str(e))
 
                     except Exception as e:
-                        xbmc.log("listVideos--bucle addVideo--Exception: " + str(e))
+                        xbmc.log("getListVideos--bucle addVideo--Exception: " + str(e))
 
-                else:
-                    xbmc.log("getListVideos - No s'ha trobat cap video")
+                result[0] = lVideos
 
+                ###############################################################################
 
-        return lVideos
+                # Pagination
+                match = re.compile('<p class="numeracio">P\xc3\xa0gina (\d+) de (\d+)</p>').findall(link)
+                if len(match) != 0:
+                    actualPage = int(match[0][0])
+                    totalPages = int(match[0][1])
+
+                    if actualPage < totalPages:
+                        ntPage = str(actualPage + 1)
+                        nextPage = '&pagina=' + ntPage
+                        if cercar:
+                            if actualPage == 1:
+                                url_next = url + nextPage
+                            else:
+                                url_next = re.sub('&pagina=[\d]+', nextPage, url)
+                            #addDir(strs.get('seguent'), url_next, "listvideoscercar", "", program)
+                        else:
+                            url_next = url + '?text=&profile=&items_pagina=15' + nextPage
+                            foldNext = FolderVideo(self.strs.get('seguent'), url_next, "getlistvideos", "","")
+                            foldNext.hasNextPage = True
+                            result[1] = foldNext
+
+        return result
 
 
     def getVideo(self, data):
@@ -680,7 +655,6 @@ class TV3cat:
 
     #mode = cercar
     def search(self):
-        lVideos = []
 
         keyboard = xbmc.Keyboard('', self.strs.get('cercar'))
         keyboard.doModal()
