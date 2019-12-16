@@ -1,40 +1,31 @@
-# -*- coding: utf-8 -*-
-
-'''
- TV3cat Kodi addon
- @author: jqandreu
- @contact: jqsandreu@gmail.com
-'''
-
-import urllib
-import urllib2
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 import json
 import xbmcgui
 import xbmc
-import requests
 
 
 def buildUrl(query, base_url):
-    return base_url + '?' + urllib.urlencode(query)
+    return base_url + '?' + urllib.parse.urlencode(query)
 
 
 def getHtml(url):
     try:
 
-        req = urllib2.Request(url)
-        response = urllib2.urlopen(req)
+        req = urllib.request.Request(url)
+        response = urllib.request.urlopen(req)
         link = response.read()
         response.close()
 
-        #req = requests.get(url)
 
         return link
 
-    except urllib2.URLError as e:
-    #except requests.exceptions.RequestException as e:
+    except urllib.error.URLError as e:
         xbmc.log("getHtml error - " + str(e))
         xbmc.log("getHtml url - " + url)
-        xbmcgui.Dialog().notification("Error a la connexio", "No s'ha pogut connectar", xbmcgui.NOTIFICATION_INFO)
 
         return None
 

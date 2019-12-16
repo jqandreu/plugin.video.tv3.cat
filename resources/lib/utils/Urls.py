@@ -1,11 +1,5 @@
 # -*- coding: utf-8 -*-
 
-'''
- TV3cat Kodi addon
- @author: jqandreu
- @contact: jqsandreu@gmail.com
-'''
-
 url_base = 'http://www.ccma.cat'
 url_alacarta = 'http://www.ccma.cat/tv3/alacarta/'
 url_coleccions = 'http://www.ccma.cat/tv3/alacarta/coleccions/'

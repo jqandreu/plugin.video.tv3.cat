@@ -1,4 +1,5 @@
-class TV3Strings:
+from builtins import object
+class TV3Strings(object):
 
     def __init__(self, addon):
         self.addon = addon

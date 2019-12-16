@@ -1,12 +1,15 @@
+from builtins import str
+from builtins import object
 from resources.lib.utils.Utils import buildUrl
 from resources.lib.tv3cat.TV3cat import TV3cat
 import xbmcaddon
 import xbmcplugin
 import xbmcgui
 import xbmc
+import urllib.parse
 
 
-class UI:
+class UI(object):
 
     def __init__(self, base_url, addon_handle, args):
         addon = xbmcaddon.Addon()
@@ -124,7 +127,7 @@ class UI:
 
         elif mode[0] == 'getlistvideos':
 
-            lVideos = self.tv3.getListVideos(url[0], None, self.name[0])
+            lVideos = self.tv3.getListVideos(url[0], None)
             self.listVideos(lVideos)
 
         elif mode[0] == 'coleccions':
@@ -142,14 +145,15 @@ class UI:
 
             mode = folder.mode
             name = folder.name
+            nameQuoted = urllib.parse.quote(name)
             url = folder.url
             iconImage = folder.iconImage
             thumbImage = folder.thumbnailImage
 
-            urlPlugin = buildUrl({'mode': mode, 'name': name, 'url': url}, self.base_url)
-            liz = xbmcgui.ListItem(name, iconImage=iconImage, thumbnailImage=thumbImage)
+            urlPlugin = buildUrl({'mode': mode, 'name': nameQuoted, 'url': url}, self.base_url)
+            liz = xbmcgui.ListItem(name)
             liz.setInfo(type="Video", infoLabels={"title": name})
-            liz.setArt({'fanart': iconImage})
+            liz.setArt({'thumb': thumbImage, 'icon' : iconImage})
 
             xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=urlPlugin, listitem=liz, isFolder=True)
         xbmcplugin.endOfDirectory(self.addon_handle)
@@ -167,37 +171,38 @@ class UI:
 
 
             for video in listVideos:
+                if video:
+                    urlVideo = video.url
+                    xbmc.log("UI - listVideos - urlVideo: " + urlVideo)
+                    iconImage = video.iconImage
+                    thumbImage = video.thumbnailImage
+                    durada = video.durada
+                    titol = video.title
 
-                urlVideo = video.url
-                xbmc.log("UI - listVideos - urlVideo: " + urlVideo)
-                iconImage = video.iconImage
-                thumbImage = video.thumbnailImage
-                durada = video.durada
-                titol = video.title
+                    urlPlugin = buildUrl({'mode':'playVideo','name':"",'url':urlVideo}, self.base_url)
 
-                urlPlugin = buildUrl({'mode':'playVideo','name':"",'url':urlVideo}, self.base_url)
+                    liz = xbmcgui.ListItem(titol)
 
-                liz = xbmcgui.ListItem(titol, iconImage="DefaultVideo.png", thumbnailImage=thumbImage)
+                    infolabels = video.information
 
-                infolabels = video.information
-
-                liz.setInfo('video', infolabels)
-                liz.addStreamInfo('video', {'duration': durada})
-                liz.setProperty('isPlayable', 'true')
-                xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=urlPlugin, listitem=liz)
+                    liz.setInfo('video', infolabels)
+                    liz.setArt({'thumb': thumbImage, 'icon': "DefaultVideo.png"})
+                    liz.addStreamInfo('video', {'duration': durada})
+                    liz.setProperty('isPlayable', 'true')
+                    xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=urlPlugin, listitem=liz)
 
             if last:
                 mode = last.mode
                 name = last.name
                 url = last.url
-                xbmc.log("UI - listVideos - urlNext: " + url)
+                #xbmc.log("UI - listVideos - urlNext: " + url)
                 iconImage = last.iconImage
                 thumbImage = last.thumbnailImage
 
-                urlPlugin = buildUrl({'mode': mode, 'name': name, 'url': url}, self.base_url)
-                liz = xbmcgui.ListItem(name, iconImage=iconImage, thumbnailImage=thumbImage)
+                urlPlugin = buildUrl({'mode': mode, 'name': '', 'url': url}, self.base_url)
+                liz = xbmcgui.ListItem(name)
                 liz.setInfo(type="Video", infoLabels={"title": name})
-                liz.setArt({'fanart': iconImage})
+                liz.setArt({'thumb': thumbImage, 'icon': iconImage})
 
                 xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=urlPlugin, listitem=liz, isFolder=True)
 

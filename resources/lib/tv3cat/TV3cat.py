@@ -1,7 +1,11 @@
+from __future__ import division
 
+from builtins import str
+from builtins import object
+from past.utils import old_div
 import re
 import xbmc
-
+import urllib.parse
 from BeautifulSoup import BeautifulSoup
 
 
@@ -11,14 +15,13 @@ from resources.lib.tv3cat import Home
 from resources.lib.tv3cat.Images import Images
 from resources.lib.tv3cat import Sections
 from resources.lib.utils import Urls
-from resources.lib.utils.Urls import url_base
 from resources.lib.video.FolderVideo import FolderVideo
 from resources.lib.video.Video import Video
 from resources.lib.tv3cat.TV3Strings import TV3Strings
 from resources.lib.utils.Utils import *
 
 
-class TV3cat:
+class TV3cat(object):
     def __init__(self, addon_path, addon):
         self.strs = TV3Strings(addon)
         self.images = Images(addon_path)
@@ -57,9 +60,6 @@ class TV3cat:
                     a = c.a["href"]
                     code = a[-8:-1]
 
-                    xbmc.log("--------CODIS VIDEOS------------")
-                    xbmc.log("codi: " + code)
-                    xbmc.log("url: " + Urls.url_datavideos + code + '&profile=pc')
 
                     html_data = getHtml(Urls.url_datavideos + code + '&profile=pc')
 
@@ -259,6 +259,13 @@ class TV3cat:
                         if urlProg == Urls.urlApm or urlProg == Urls.urlZonaZaping:
                             url_final = urlProg + 'clips/'
 
+                        elif 'super3' in url:
+                            if 'https:' not in url:
+                                url_final = 'https:' + url
+                            else:
+                                url_final = url
+
+
                         else:
                             match = re.compile('(http://www.ccma.cat/tv3/alacarta/.+?/fitxa-programa/)(\d+/)').findall(
                                 urlProg)
@@ -268,6 +275,7 @@ class TV3cat:
                                 url_final = url1 + 'ultims-programes/' + urlcode
                             else:
                                 url_final = urlProg + 'ultims-programes/'
+
 
                         xbmc.log("programsSections url final: " + str(url_final))
 
@@ -389,7 +397,7 @@ class TV3cat:
     # mode = progAZ
     def programesAZ(self, paramUrl, letters):
         xbmc.log("--------------------programesAZ------------------")
-
+        letters = urllib.parse.unquote(letters)
         lFolderVideos = []
         url = ""
 
@@ -453,6 +461,7 @@ class TV3cat:
                         if len(links) > 0:
 
                             for i in links:
+                                xbmc.log("progsAZ - li: " + str(i).encode('utf-8'))
 
                                 url = i.a["href"]
                                 titol = i.a.string.strip().encode("utf-8")
@@ -461,6 +470,12 @@ class TV3cat:
                                 urlProg = Urls.url_base + url
                                 if urlProg == Urls.urlApm or urlProg == Urls.urlZonaZaping:
                                     url_final = urlProg + 'clips/'
+
+                                elif 'super3' in url:
+                                    if 'https:' not in url:
+                                        url_final = 'https:' + url
+                                    else:
+                                        url_final = url
 
                                 else:
                                     match = re.compile(
@@ -474,12 +489,14 @@ class TV3cat:
 
                                 folderVideo = FolderVideo(titol, url_final, 'getlistvideos', "", "")
                                 lFolderVideos.append(folderVideo)
+                                xbmc.log("progsAZ - Titol: " + titol)
+                                xbmc.log("progsAZ - url: " + url_final)
 
 
         return  lFolderVideos
 
     # mode = getlistvideos
-    def getListVideos(self, url, cercar, program):
+    def getListVideos(self, url, cercar):
         xbmc.log("---------------getListVideos------------------------------")
         result = [None] * 2
         lVideos = []
@@ -511,6 +528,19 @@ class TV3cat:
                 if not links:
                     links = soup.findAll("article", {"class": "M-destacat  C-destacatVideo T-alacartaTema C-3linies "})
 
+                # Super 3
+                if not links:
+                    links = soup.findAll("article",
+                                         {"class": "M-destacat super3 T-video  ombres-laterals"})
+                    links2 = soup.findAll("article",
+                                         {"class": "M-destacat super3 noGapAfter T-video  ombres-laterals"})
+                    links = links + links2
+
+                # Super 3
+                if not links:
+                    links = soup.findAll("article",
+                                         {"class": "M-destacat super3 noGapAfter T-video  ombres-laterals"})
+
 
             except AttributeError as e:
                 xbmc.log("getListVideos--getLinks--Exception AtributeError listVideos: " + str(e))
@@ -529,9 +559,6 @@ class TV3cat:
 
                         code = urlvideo[-8:-1]
 
-                        xbmc.log("--------CODIS VIDEOS------------")
-                        xbmc.log("codi: " + code)
-                        xbmc.log("url: " + Urls.url_datavideos + code + '&profile=pc')
 
                         html_data = getHtml(Urls.url_datavideos + code + '&profile=pc')
 
@@ -572,7 +599,6 @@ class TV3cat:
                                 url_next = url + nextPage
                             else:
                                 url_next = re.sub('&pagina=[\d]+', nextPage, url)
-                            #addDir(strs.get('seguent'), url_next, "listvideoscercar", "", program)
                         else:
                             url_next = url + '?text=&profile=&items_pagina=15' + nextPage
                             foldNext = FolderVideo(self.strs.get('seguent'), url_next, "getlistvideos", "","")
@@ -608,7 +634,7 @@ class TV3cat:
             durada = ""
 
             if milisec != None:
-                durada = milisec / 1000
+                durada = old_div(milisec, 1000)
 
 
             if descripcio == None:
@@ -634,11 +660,11 @@ class TV3cat:
 
             if titol != None:
                 infolabels['title'] = titol
-                xbmc.log('Titol: ' + titol.encode("utf-8"))
+
 
             if capitol != None:
                 infolabels['episode'] = capitol
-                xbmc.log('Capitol: ' + str(capitol))
+
 
             if descripcio != None:
                 infolabels['plot'] = descripcio
@@ -662,7 +688,7 @@ class TV3cat:
             search_string = keyboard.getText().replace(" ", "+")
             url = "http://www.ccma.cat/tv3/alacarta/cercador/?items_pagina=15&profile=videos&text=" + search_string
 
-            lVideos = self.getListVideos(url, True,"")
+            lVideos = self.getListVideos(url, True)
 
         return lVideos
 

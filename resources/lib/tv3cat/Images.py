@@ -1,7 +1,8 @@
+from builtins import object
 import os
 
 
-class Images:
+class Images(object):
 
     def __init__(self, addon_path):
 

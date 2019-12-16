@@ -1,5 +1,5 @@
-
-class Video:
+from builtins import object
+class Video(object):
 
     def __init__(self, title, iconImage, thumbnailImage, information, url, durada):
 

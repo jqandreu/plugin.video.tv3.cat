@@ -1,5 +1,5 @@
 from resources.lib.video.FolderVideo import FolderVideo
-from resources.lib.tv3cat.TV3Strings import TV3Strings
+
 
 
 def getList(strings):
