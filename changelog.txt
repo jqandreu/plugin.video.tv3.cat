@@ -1,4 +1,6 @@
-﻿1.4.5
+﻿1.4.6
+- Fixed server changes
+1.4.5
 - Fixed server changes
 v1.4.4
 - Fixed error in Libreelec with import lib2to3 script. Deleted old_div
