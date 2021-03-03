@@ -1,4 +1,8 @@
-﻿v1.4.7
+﻿v1.4.8
+- Adapted to Kodi 19
+- Fixed errors
+
+v1.4.7
 - Fixed direct channels urls
 
 1.4.6
