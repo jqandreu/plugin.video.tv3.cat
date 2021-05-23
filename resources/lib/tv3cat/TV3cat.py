@@ -531,9 +531,9 @@ class TV3cat(object):
 
                 # Super 3
                 if not links:
-                    links = soup.findAll("article",
+                    links = soup.findAll("div",
                                          {"class": "M-destacat super3 T-video  ombres-laterals"})
-                    links2 = soup.findAll("article",
+                    links2 = soup.findAll("div",
                                          {"class": "M-destacat super3 noGapAfter T-video  ombres-laterals"})
                     links = links + links2
 
