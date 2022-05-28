@@ -310,21 +310,24 @@ class TV3cat(object):
 
                 i = 0
                 while i < 5:
-                    nameChannel = c[i].get('ara_fem', {}).get('codi_canal', None)
+                    try:
+                        nameChannel = c[i].get('ara_fem', {}).get('codi_canal', None)
 
-                    if nameChannel == 'tv3':
-                        arafemtv3 = c[i].get('ara_fem', {}).get('titol_programa', None)
-                        arafemtv3_sinop = c[i].get('ara_fem', {}).get('sinopsi', None)
-                    if nameChannel == 'cs3' or nameChannel == '33d':
-                        arafem33 = c[i].get('ara_fem', {}).get('titol_programa', None)
-                        arafem33_sinop = c[i].get('ara_fem', {}).get('sinopsi', None)
-                    if nameChannel == 'esport3':
-                        arafemesp3 = c[i].get('ara_fem', {}).get('titol_programa', None)
-                        arafemesp3_sinop = c[i].get('ara_fem', {}).get('sinopsi', None)
-                    if nameChannel == '324':
-                        arafem324 = c[i].get('ara_fem', {}).get('titol_programa', None)
-                        arafem324_sinop = c[i].get('ara_fem', {}).get('sinopsi', None)
+                        if nameChannel == 'tv3':
+                            arafemtv3 = c[i].get('ara_fem', {}).get('titol_programa', None)
+                            arafemtv3_sinop = c[i].get('ara_fem', {}).get('sinopsi', None)
+                        if nameChannel == 'cs3' or nameChannel == '33d':
+                            arafem33 = c[i].get('ara_fem', {}).get('titol_programa', None)
+                            arafem33_sinop = c[i].get('ara_fem', {}).get('sinopsi', None)
+                        if nameChannel == 'esport3':
+                            arafemesp3 = c[i].get('ara_fem', {}).get('titol_programa', None)
+                            arafemesp3_sinop = c[i].get('ara_fem', {}).get('sinopsi', None)
+                        if nameChannel == '324':
+                            arafem324 = c[i].get('ara_fem', {}).get('titol_programa', None)
+                            arafem324_sinop = c[i].get('ara_fem', {}).get('sinopsi', None)
 
+                    except AttributeError:
+                        pass
                     i = i + 1
 
             infolabelstv3 = {}
