@@ -335,6 +335,7 @@ class TV3cat(object):
             infolabels33 = {}
             infolabelsesp3 = {}
 
+            infotv3 = 'n/a'
             if arafemtv3:
                 infolabelstv3['title'] = arafemtv3
                 infotv3 = '[B]' + arafemtv3 + '[/B]' + '[CR]'
@@ -345,6 +346,7 @@ class TV3cat(object):
 
             infolabelstv3['plot'] = infotv3
 
+            info33 = 'n/a'
             if arafem33:
                 infolabels33['title'] = arafem33
                 info33 = '[B]' + arafem33 + '[/B]' + '[CR]'
@@ -355,6 +357,7 @@ class TV3cat(object):
 
             infolabels33['plot'] = info33
 
+            infoesp3 = 'n/a'
             if arafemesp3:
                 infolabelsesp3['title'] = arafemesp3
                 infoesp3 = '[B]' + arafemesp3 + '[/B]' + '[CR]'
@@ -365,6 +368,7 @@ class TV3cat(object):
 
             infolabelsesp3['plot'] = infoesp3
 
+            info324 = 'n/a'
             if arafem324:
                 infolabels324['title'] = arafem324
                 info324 = '[B]' + arafem324 + '[/B]' + '[CR]'
