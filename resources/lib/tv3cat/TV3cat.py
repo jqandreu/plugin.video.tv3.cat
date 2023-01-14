@@ -262,11 +262,11 @@ class TV3cat(object):
                         if urlProg == Urls.urlApm or urlProg == Urls.urlZonaZaping:
                             url_final = urlProg + 'clips/'
 
-                        elif '/sx3/' in url:
-                            if 'https:' not in url:
-                                url_final = 'https:' + url + 'videos'
-                            else:
-                                url_final = url
+#                        elif '/sx3/' in url or '/super3/' in url:
+#                            if 'https:' not in url:
+#                                url_final = 'https:' + url + 'videos'
+#                            else:
+#                                url_final = url
 
 
                         else:
@@ -476,7 +476,7 @@ class TV3cat(object):
                                 if urlProg == Urls.urlApm or urlProg == Urls.urlZonaZaping:
                                     url_final = urlProg + 'clips/'
 
-                                elif '/sx3/' in url:
+                                elif '/sx3/' in url or '/super3/' in url:
                                     if 'https:' not in url:
                                         url_final = 'https:' + url + 'videos'
                                     else:

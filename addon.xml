@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<<<<<<< HEAD
 <addon id="plugin.video.tv3.cat" name="TV3cat" version="1.4.9" provider-name="jqandreu">
     <requires>
         <import addon="xbmc.python" version="2.14.0"/>
