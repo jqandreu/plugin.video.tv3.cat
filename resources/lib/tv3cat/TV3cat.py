@@ -526,7 +526,7 @@ class TV3cat(object):
                 # Super 3
                 if not links:
                     links = soup.findAll("li",
-                                         {"class": " C-llistatVideo"})
+                                         {"class": "C-llistatVideo"})
 
                 # Super 3
                 if not links:
