@@ -6,6 +6,7 @@ import xbmcaddon
 import xbmcplugin
 import xbmcgui
 import xbmc
+import xbmcvfs
 import urllib.parse
 
 
@@ -13,7 +14,7 @@ class UI(object):
 
     def __init__(self, base_url, addon_handle, args):
         addon = xbmcaddon.Addon()
-        addon_path = xbmc.translatePath(addon.getAddonInfo('path'))
+        addon_path = xbmcvfs.translatePath(addon.getAddonInfo('path'))
         self.tv3 = TV3cat(addon_path, addon)
         self.base_url = base_url
         self.addon_handle = addon_handle

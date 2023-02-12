@@ -4,7 +4,7 @@ from builtins import object
 import re
 import xbmc
 import urllib.parse
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 
 
 from resources.lib.tv3cat import DirAZemisio
@@ -42,15 +42,15 @@ class TV3cat(object):
 
         if html_destacats:
 
-            soup = BeautifulSoup(html_destacats)
+            soup = BeautifulSoup(html_destacats, "html.parser")
             dest = None
 
             try:
 
                 destacats = soup.findAll("article", {"class": re.compile("M-destacat")})
 
-                destacats2 = soup.find("div", {"class": "container C-nouGrid "}).findAll("div", {
-                    "class": re.compile("swiper-slide")})
+
+                destacats2 = soup.findAll("div", {"class": re.compile("swiper-slide")})
 
                 destacats.extend(destacats2)
 
@@ -92,7 +92,7 @@ class TV3cat(object):
 
         if link:
 
-            soup = BeautifulSoup(link)
+            soup = BeautifulSoup(link, "html.parser")
 
             try:
                 links = soup.findAll("li", {"class": "sensePunt R-elementLlistat  C-llistatVideo"})
@@ -138,16 +138,10 @@ class TV3cat(object):
 
         if link:
 
-            soup = BeautifulSoup(link)
+            soup = BeautifulSoup(link, "html.parser")
 
             try:
-                links = soup.findAll("li", {"class": "sensePunt R-elementLlistat  C-llistatVideo"})
-
-                if not links:
-                    links = soup.findAll("li", {"class": "sensePunt R-elementLlistat  C-llistatVideo "})
-
-                if not links:
-                    links = soup.findAll("li", {"class": "sensePunt R-elementLlistat  C-llistatVideo  "})
+                links = soup.findAll("li", {"class": re.compile("C-llistatVideo")})
 
                 for i in links:
                     a = i.a["href"]
@@ -187,18 +181,18 @@ class TV3cat(object):
 
         if link:
 
-            soup = BeautifulSoup(link)
+            soup = BeautifulSoup(link, "html.parser")
 
             try:
 
-                colecc = soup.findAll("article", {"class": "M-destacat T-alacartaTema C-compacte     "})
+                colecc = soup.findAll("div", {"class": re.compile("M-destacat")})
 
 
                 for el in colecc:
 
                     url = el.a["href"]
                     url = Urls.url_base + url
-                    t = el.header.h1.a.string
+                    t = el.div.h2.a.string
 
                     titol = t.encode("utf-8")
 
@@ -416,7 +410,7 @@ class TV3cat(object):
 
         if html:
 
-            soup = BeautifulSoup(html.decode('utf-8', 'ignore'))
+            soup = BeautifulSoup(html.decode('utf-8', 'ignore'), "html.parser")
 
             elements = soup.findAll("ul", {"class": "R-abcProgrames"})
 
@@ -466,7 +460,7 @@ class TV3cat(object):
                         if len(links) > 0:
 
                             for i in links:
-                                xbmc.log("progsAZ - li: " + str(i).encode('utf-8'))
+                                #xbmc.log("progsAZ - li: " + str(i).encode('utf-8'))
 
                                 url = i.a["href"]
                                 titol = i.a.string.strip().encode("utf-8")
@@ -512,7 +506,8 @@ class TV3cat(object):
 
         if link:
 
-            soup = BeautifulSoup(link.decode('utf-8', 'ignore'))
+            soup = BeautifulSoup(link.decode('utf-8', 'ignore'), "html.parser")
+
             links = None
             try:
                 links = soup.findAll("div", {"class": "F-itemContenidorIntern C-destacatVideo"})
@@ -522,12 +517,7 @@ class TV3cat(object):
 
                 # Coleccions
                 if not links:
-                    links = soup.findAll("div", {"class": "F-itemContenidorIntern C-destacatVideo"})
-
-                # Coleccions 2
-                if not links:
-                    links = soup.findAll("article",
-                                         {"class": "M-destacat  C-destacatVideo T-alacartaTema C-3linies   "})
+                    links = soup.findAll("div", {"class": re.compile("M-destacat")})
 
                 # Zona Zapping
                 if not links:
@@ -591,7 +581,9 @@ class TV3cat(object):
                 ###############################################################################
 
                 # Pagination
-                match = re.compile('<p class="numeracio">P\xc3\xa0gina (\d+) de (\d+)</p>').findall(link)
+                ht = rb'<p class="numeracio">P\xc3\xa0gina (\d+) de (\d+)</p>'
+
+                match = re.compile(ht).findall(link)
                 if len(match) != 0:
                     actualPage = int(match[0][0])
                     totalPages = int(match[0][1])
