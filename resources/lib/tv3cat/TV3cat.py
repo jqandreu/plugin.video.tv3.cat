@@ -256,15 +256,15 @@ class TV3cat(object):
                         if urlProg == Urls.urlApm or urlProg == Urls.urlZonaZaping:
                             url_final = urlProg + 'clips/'
 
-                        elif 'super3' in url:
-                            if 'https:' not in url:
-                                url_final = 'https:' + url
-                            else:
-                                url_final = url
+#                        elif '/sx3/' in url or '/super3/' in url:
+#                            if 'https:' not in url:
+#                                url_final = 'https:' + url + 'videos'
+#                            else:
+#                                url_final = url
 
 
                         else:
-                            match = re.compile('(http://www.ccma.cat/tv3/alacarta/.+?/fitxa-programa/)(\d+/)').findall(
+                            match = re.compile('(https?://www.ccma.cat/tv3/alacarta/.+?/fitxa-programa/)(\d+/)').findall(
                                 urlProg)
                             if len(match) != 0:
                                 url1 = match[0][0]
@@ -309,21 +309,25 @@ class TV3cat(object):
                 arafem324_sinop = ''
 
                 i = 0
+                #xbmc.log("Channels: %s" % c[)
                 while i < 5:
-                    nameChannel = c[i].get('ara_fem', {}).get('codi_canal', None)
+                    xbmc.log("Channel test %i" % i)
+                    ara_fem = c[i].get('ara_fem', {})
+                    if type(ara_fem) is dict:
+                        nameChannel = ara_fem.get('codi_canal', None)
 
-                    if nameChannel == 'tv3':
-                        arafemtv3 = c[i].get('ara_fem', {}).get('titol_programa', None)
-                        arafemtv3_sinop = c[i].get('ara_fem', {}).get('sinopsi', None)
-                    if nameChannel == 'cs3' or nameChannel == '33d':
-                        arafem33 = c[i].get('ara_fem', {}).get('titol_programa', None)
-                        arafem33_sinop = c[i].get('ara_fem', {}).get('sinopsi', None)
-                    if nameChannel == 'esport3':
-                        arafemesp3 = c[i].get('ara_fem', {}).get('titol_programa', None)
-                        arafemesp3_sinop = c[i].get('ara_fem', {}).get('sinopsi', None)
-                    if nameChannel == '324':
-                        arafem324 = c[i].get('ara_fem', {}).get('titol_programa', None)
-                        arafem324_sinop = c[i].get('ara_fem', {}).get('sinopsi', None)
+                        if nameChannel == 'tv3':
+                            arafemtv3 = c[i].get('ara_fem', {}).get('titol_programa', None)
+                            arafemtv3_sinop = c[i].get('ara_fem', {}).get('sinopsi', None)
+                        if nameChannel == 'sx3' or nameChannel == 'c33':
+                            arafem33 = c[i].get('ara_fem', {}).get('titol_programa', None)
+                            arafem33_sinop = c[i].get('ara_fem', {}).get('sinopsi', None)
+                        if nameChannel == 'esport3':
+                            arafemesp3 = c[i].get('ara_fem', {}).get('titol_programa', None)
+                            arafemesp3_sinop = c[i].get('ara_fem', {}).get('sinopsi', None)
+                        if nameChannel == '324':
+                            arafem324 = c[i].get('ara_fem', {}).get('titol_programa', None)
+                            arafem324_sinop = c[i].get('ara_fem', {}).get('sinopsi', None)
 
                     i = i + 1
 
@@ -466,15 +470,15 @@ class TV3cat(object):
                                 if urlProg == Urls.urlApm or urlProg == Urls.urlZonaZaping:
                                     url_final = urlProg + 'clips/'
 
-                                elif 'super3' in url:
-                                    if 'https:' not in url:
-                                        url_final = 'https:' + url
-                                    else:
-                                        url_final = url
+#                                elif '/sx3/' in url or '/super3/' in url:
+#                                    if 'https:' not in url:
+#                                        url_final = 'https:' + url + 'videos'
+#                                    else:
+#                                        url_final = url
 
                                 else:
                                     match = re.compile(
-                                        '(http://www.ccma.cat/tv3/alacarta/.+?/fitxa-programa/)(\d+/)').findall(urlProg)
+                                        '(https?://www.ccma.cat/tv3/alacarta/.+?/fitxa-programa/)(\d+/)').findall(urlProg)
                                     if len(match) != 0:
                                         url1 = match[0][0]
                                         urlcode = match[0][1]
@@ -521,11 +525,8 @@ class TV3cat(object):
 
                 # Super 3
                 if not links:
-                    links = soup.findAll("div",
-                                         {"class": "M-destacat super3 T-video  ombres-laterals"})
-                    links2 = soup.findAll("div",
-                                         {"class": "M-destacat super3 noGapAfter T-video  ombres-laterals"})
-                    links = links + links2
+                    links = soup.findAll("li",
+                                         {"class": "C-llistatVideo"})
 
                 # Super 3
                 if not links:
@@ -556,7 +557,7 @@ class TV3cat(object):
 
                         html_data = getHtml(Urls.url_datavideos + code + '&profile=pc')
 
-                        html_data = html_data.decode("ISO-8859-1")
+                        html_data = html_data.decode("utf-8")
                         data = json.loads(html_data)
 
                         if len(data) > 0:
